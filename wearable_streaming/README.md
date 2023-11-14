@@ -1,9 +1,9 @@
 # Wearable Streaming
 
-This project illustrates how to create a reactive Flutter app that listens to a sensor - in this case the Polar HR sensor. The app contains 4 different `main` files that each illustrates different levels of reactive programming in Flutter. The apps illustrate:
+This project illustrates how to create a reactive Flutter app that listens to a sensor - in this case the Polar HR sensor. The app contains 4 different `main` files that each illustrate different levels of reactive programming in Flutter. The apps illustrate:
 
 * how to obtain permissions to use Bluetooth (BLE)
-* how to listen to listen to device events
+* how to listen to device events
 * how to connect to a device
 * how to do state management
 * how to build reactive UI
@@ -11,16 +11,16 @@ This project illustrates how to create a reactive Flutter app that listens to a 
 
 ## [`main_1`](lib/main_1.dart)
 
-This HRApp is the most simple version of a HR demo app, highlighting:
+This HRApp is the most simple version of an HR demo app, highlighting:
 
 * obtain permissions
 * using a simple HR monitor `SimplePolarHRMonitor`
 * starting the monitor from the FloatingActionButton
 * displaying HR data in a StreamBuilder
 
-Note that the user has to wait pressing the "start" button until the initialization has taken place, and that this isn't visible in the UI. Also note that once the sampling has started, it cannot be stopped again.
+Note that the user has to wait to press the "start" button until the initialization has taken place and that this isn't visible in the UI. Also note that once the sampling has started, it cannot be stopped again.
 
-The UI is shown below. We see how permissions are shown, and that we can start listen to the sensor, but not stop it again.
+The UI is shown below. We see how permissions are shown, and that we can start listening to the sensor, but not stop it again.
 
 ![alt](img/main_1.png)
 
@@ -50,9 +50,9 @@ Permissions are handled using [`permission_handler`](https://pub.dev/packages/pe
 
 ### Listening to Events and Connecting to Device
 
-On the [Polar API](https://pub.dev/documentation/polar/latest/) you can listen to different events from the device. This is done in the `init()` method. In this version of the app, we don't use the events to anything and just prints a status message.
+On the [Polar API](https://pub.dev/documentation/polar/latest/) you can listen to different events from the device. This is done in the `init()` method. In this version of the app, we don't use the events to anything and just print a status message.
 
-After listening has be set up, we connect to the device knowing its `identifier` - the ID printed on the side of the Polar device. Note that if don't know the device id, you can scan for Polar devices using the `searchForDevice()` method, which returns a stream to listen to.
+After listening has been set up, we connect to the device knowing its `identifier` - the ID printed on the side of the Polar device. Note that if don't know the device id, you can scan for Polar devices using the `searchForDevice()` method, which returns a stream to listen to.
 
 ```dart
   /// Initialize this HR monitor.
@@ -82,11 +82,11 @@ After listening has be set up, we connect to the device knowing its `identifier`
   }
   ```
 
-> **NOTE** - Listening to event normally had to be setup up **before** connecting to the device (this is common to most BLE devices).
+> **NOTE** - Listening to events normally had to be set up **before** connecting to the device (this is common to most BLE devices).
 
 ### Listen to HR Events
 
-Now that we have initialized and connected to the device, we can start listen to HR events. This is done by;
+Now that we have initialized and connected to the device, we can start listening to HR events. This is done by;
 
 ```dart
   void start() {
@@ -127,11 +127,11 @@ As you can see, this button only knows how to start the HR monitor - and not how
 
 ## [`main_2`](lib/main_2.dart)
 
-This is a slightly more advance HR Monitor (compared to `main_1`), featuring:
+This is a slightly more advanced HR Monitor (compared to `main_1`), featuring:
 
 * defining an interface for a [HRMonitor]
-* an implementation done as a [PolarHRMonitor]
-* keeping track on device state in the enum [DeviceState]
+* an implementation is done as a [PolarHRMonitor]
+* keeping track of device state in the enum [DeviceState]
 * also supporting "stopping" the monitor from the FloatingActionButton
 * the icon of the button is updated according to the state of the device
 * displaying device states in the UI.
@@ -139,11 +139,11 @@ This is a slightly more advance HR Monitor (compared to `main_1`), featuring:
 Since the PolarHRMonitor knows its own connection state, we can avoid starting sampling before the device is actually connected. See the `start()` method.
 
 Note that this implementation still has the problem that the user needs to wait until the `init()` method has run before pressing the "Start" button.
-Also note that the state of the device isn't updated correctly in the UI, and that update of the UI has to take place in a `setState()` Widget methods - which is bad coding :-(
+Also note that the state of the device isn't updated correctly in the UI, and that update of the UI has to take place in a `setState()` Widget method - which is bad coding :-(
 
 ### Defining the HR Monitor Interface
 
-We now use an interface (abstract class) to defined what an HR monitor is:
+We now use an interface (abstract class) to define what an HR monitor is:
 
 ```dart
 /// A Heart Rate (HR) Monitor interface.
@@ -174,7 +174,7 @@ abstract class HRMonitor {
 }
 ```
 
-Having this definition of an HR Monitor is super useful once we start using other physical devices - in this case we can "hide" the device-specific implementation is a sub-class that implements this interface. For example, the `PolarHRMonitor` class implements how we use the Polar device, but from the user interface, we don't need to worry about this - we can just use the abstract definition of a HR Monitor (see below).
+Having this definition of an HR Monitor is super useful once we start using other physical devices - in this case, we can "hide" the device-specific implementation as a sub-class that implements this interface. For example, the `PolarHRMonitor` class implements how we use the Polar device, but from the user interface, we don't need to worry about this - we can just use the abstract definition of an HR Monitor (see below).
 
 ### Keeping Track of Device State
 
@@ -227,7 +227,7 @@ The UI of this updated app is shown below.
 
 ![alt](img/main_2.png)
 
-In the UI we can now use a `HRMonitor` (which we initialize to be a `PolarHRMonitor`):
+In the UI we can now use an `HRMonitor` (which we initialize to be a `PolarHRMonitor`):
 
 ```dart
 class _HRHomePageState extends State<HRHomePage> {
@@ -248,11 +248,11 @@ We can now show the `state` of the device in the UI:
 Text('Polar [${monitor.identifier}] - ${monitor.state.name}'),
 ```
 
-In the UI figure we see that the state changes from "unknown" to "connected" to "sampling" as the state changes.
+In the UI figure, we see that the state changes from "unknown" to "connected" to "sampling" as the state changes.
 
-> **Note**, however, since this this `Text` widget is not embedded in a StreamBuilder or anything, the UI is actually not update when the state change from e.g. "connecting" to "connected". This is solved in `main_3` below.
+> **Note**, however, since this `Text` widget is not embedded in a StreamBuilder or anything, the UI is actually not updated when the state changes from e.g. "connecting" to "connected". This is solved in `main_3` below.
 
-The StreamBuilder that shows the HR is same as in `main_1`. But since we now know is the monitor `isRunning()`, we can now set the FloatingButton to show either a "play" button when it can start (i.e., not running) and a "stop" button when is can stop (i.e., is running):
+The StreamBuilder that shows the HR is the same as in `main_1`. But since we now know if the monitor `isRunning()`, we can now set the FloatingButton to show either a "play" button when it can start (i.e., not running) and a "stop" button when it can stop (i.e., is running):
 
 ```dart
       floatingActionButton: FloatingActionButton(
@@ -273,7 +273,7 @@ In the picture above, we can see how the button has changed from showing a "play
 This is the most advanced HR Monitor app solving some of the issues with `main_1` and `main_2`. This app:
 
 * uses a [StatefulPolarHRMonitor] which has a stream of [stateChange]
-* this stateChange stream is used to keep the UI updated according to the state of the monitor
+* this `stateChange` stream is used to keep the UI updated according to the state of the monitor
 * this also includes which icon to show on the button
 * this allows us to AVOID USING the setState() Flutter method :-)
 
@@ -335,7 +335,7 @@ State management in the `StatefulPolarHRMonitor` is now done using a `StreamCont
   Stream<DeviceState> get stateChange => _stateChangeController.stream;
 ```
 
-The state of the monitor is now save in the (private) `_state` property. We create a StreamController called `_stateChangeController` to handle state change events. A new state is set in the `set state(DeviceState state)` method. Here we print the state change, set the `_state` property, and then add an even to the state controller that an event has happened. This event will now be send out on the stream of the `_stateChangeController` and this stream can be accessed from the `stateChange` property. As before, the current state of the monitor can be accessed via the `state` property, which just return the internal / private `_state` property.
+The state of the monitor is now save in the (private) `_state` property. We create a StreamController called `_stateChangeController` to handle state change events. A new state is set in the `set state(DeviceState state)` method. Here we print the state change, set the `_state` property, and then add an event to the state controller that an event has happened. This event will now be sent out on the stream of the `_stateChangeController` and this stream can be accessed from the `stateChange` property. As before, the current state of the monitor can be accessed via the `state` property, which just returns the internal/private `_state` property.
 
 Now changing state based on the event from the Polar device becomes very simple:
 
@@ -359,7 +359,7 @@ Using the `stateChange` stream, we can now update the UI so the Text widget show
             ),
 ```
 
-And similarly, the FloatingButton widget can be updated to use this stream:
+Similarly, the FloatingButton widget can be updated to use this stream:
 
 ```dart
       floatingActionButton: FloatingActionButton(
@@ -387,15 +387,15 @@ Note that we actually don't use the value of the `stateChange` stream (what is c
 
 ## [`main_4`](lib/main_4.dart)
 
-This HR Monitor is a direct copy of main_3.dart but also supports saving HR data persistently on the phone using the [sembast](https://pub.dev/packages/sembast) database. Sembast is a document-based (or JSON-based) database that can store "plain" documents and key-value pairs, like JSON. Hence, if we have data in JSON format, such a document database is easy to use.
+This HR Monitor is a direct copy of `main_3` but also supports saving HR data persistently on the phone using the [sembast](https://pub.dev/packages/sembast) database. Sembast is a document-based (or JSON-based) database that can store "plain" documents and key-value pairs, like JSON. Hence, if we have data in JSON format, such a document database is easy to use.
 
-The main idea is to create a `Storage` class which is responsible for storing HR data. This storage class simply listen to the HR stream from the `HRMonitor` and saves the data. Here the ability to have multicast streams in Flutter comes into play, since both the UI and the Storage class listens to the same stream of HR data.
+The main idea is to create a `Storage` class which is responsible for storing HR data. This storage class simply listen to the HR stream from the `HRMonitor` and saves the data. Here the ability to have multicast streams in Flutter comes into play since both the UI and the Storage class listen to the same stream of HR data.
 
 The `Storage` class is listed below, and there is plenty of code documentation to explain what is going on.
 
 ```dart
 
-/// Responsible for storing HR event to a Sembast database.
+/// Responsible for storing HR events to a Sembast database.
 class Storage {
   HRMonitor monitor;
   StoreRef? store;
@@ -439,7 +439,7 @@ class Storage {
 }
 ```
 
-As you can see, the `Storage` class even handles subscription to the monitor itself (in the `init()` method). The only thing we need to do is to construct the Storage class and provide a link to the monitor it should save data for. This is done by this statement in the `StatefulPolarHRMonitor` constructor.
+As you can see, the `Storage` class even handles subscription to the monitor itself (in the `init()` method). The only thing we need to do is to construct the Storage class and provide a link to the monitor, which it is storing data for. This is done by this statement in the `StatefulPolarHRMonitor` constructor.
 
 ```dart
   StatefulPolarHRMonitor(this._identifier) {
@@ -447,7 +447,7 @@ As you can see, the `Storage` class even handles subscription to the monitor its
   }
 ```
 
-We simply give the `storage` a link to the monitor which creates it (`this`).
+We simply give the `storage` a link to the monitor that creates it (`this`).
 
 Now that `storage` is created and knows "its" `monitor`, we can initialize storage as part of initializing the monitor:
 
@@ -468,7 +468,7 @@ Now that `storage` is created and knows "its" `monitor`, we can initialize stora
   }
   ```
 
-  Now - since storage is listening to HR events (just like the UI is), data is stored to the database, using the `store?.add(database, json)` statement. The json format of the stored data is a simple json map of `timestamp` and `hr` like this:
+Now - since storage is listening to HR events (just like the UI is), data is stored in the database, using the `store?.add(database, json)` statement. The JSON format of the stored data is a simple JSON map of `timestamp` and `hr` like this:
 
   ```json
   {timestamp: 1699880580494, hr: 57}
