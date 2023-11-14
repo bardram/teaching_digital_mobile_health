@@ -1,0 +1,10 @@
+name: digital_health_examples
+description: Dart exampled for the DTU 22061 course on Introduction to Digital Health
+version: 1.0.0
+
+environment:
+  sdk: ^3.1.0 
+
+dependencies:
+  http: ^1.1.0
+  sensors_plus: ^3.1.0

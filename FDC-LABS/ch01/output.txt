@@ -1,0 +1,19 @@
+[Running] dart "/Users/bardram/GitHub/22061-Introduction.to.Digital Health/FDC-labs/ch01/1.1.dart"
+Hello, Dart World!
+
+[Done] exited with code=0 in 0.389 seconds
+
+[Running] dart "/Users/bardram/GitHub/22061-Introduction.to.Digital Health/FDC-labs/ch01/1.2.dart"
+35
+
+[Done] exited with code=0 in 0.371 seconds
+
+[Running] dart "/Users/bardram/GitHub/22061-Introduction.to.Digital Health/FDC-labs/ch01/1.3.dart"
+2.99
+
+[Done] exited with code=0 in 0.373 seconds
+
+[Running] dart "/Users/bardram/GitHub/22061-Introduction.to.Digital Health/FDC-labs/ch01/1.4.dart"
+true
+
+[Done] exited with code=0 in 0.377 seconds
