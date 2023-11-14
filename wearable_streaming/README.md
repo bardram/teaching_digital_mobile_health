@@ -470,6 +470,6 @@ Now that `storage` is created and knows "its" `monitor`, we can initialize stora
 
 Now - since storage is listening to HR events (just like the UI is), data is stored in the database, using the `store?.add(database, json)` statement. The JSON format of the stored data is a simple JSON map of `timestamp` and `hr` like this:
 
-  ```json
+  ```
   {timestamp: 1699880580494, hr: 57}
   ```
