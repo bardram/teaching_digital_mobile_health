@@ -8,4 +8,4 @@ This folder contains some of the code snippets from the [FDC] book. You can also
 
 Below you can see how the FDC-LABS project has been setup in VSCode.
 
-![VSCode](https://github.com/bardram/22061-Introduction.to.Digital-Health/blob/master/FDC-LABS/VSCode.FDC-LABS.jpg "VSCode")
+![VSCode](VSCode.FDC-LABS.jpg "VSCode")
