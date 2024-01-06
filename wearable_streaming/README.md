@@ -473,3 +473,56 @@ Now - since storage is listening to HR events (just like the UI is), data is sto
   ```
   {timestamp: 1699880580494, hr: 57}
   ```
+
+## [`main_5`](lib/main_5.dart)
+
+This HR Monitor is a direct copy of `main_3` while using a [Movesense](https://www.movesense.com/) device instead of the Polar device. Note that all the code is identical while just implementing the `MovesenseHRMonitor` class, which actually is only changed in the `init()` and `start()` methods. The rest is identical to the `StatefulPolarHRMonitor` defined in `main_3.dart`. The common code for both sensor are now added to the abstract `StatefulHRMonitor` class, which both inherits from.
+
+```dart
+/// A Movesense Heart Rate (HR) Monitor.
+class MovesenseHRMonitor extends StatefulHRMonitor {
+  String? _address, _name, _serial;
+
+  @override
+  String get identifier => _address!;
+
+  /// The name of the device.
+  String? get serial => _serial;
+
+  /// The serial number of the device.
+  String? get name => _name;
+
+  MovesenseHRMonitor(this._address);
+
+  @override
+  Future<void> init() async {
+    state = DeviceState.initialized;
+    if (!(await hasPermissions)) await requestPermissions();
+
+    // Start connecting to the Movesense device with the specified address.
+    state = DeviceState.connecting;
+    Mds.connect(
+      identifier,
+      (serial) {
+        _serial = serial;
+        state = DeviceState.connected;
+      },
+      () => state = DeviceState.disconnected,
+      () => state = DeviceState.error,
+    );
+  }
+
+  @override
+  void start() {
+    if (state == DeviceState.connected && _serial != null) {
+      _subscription = MdsAsync.subscribe(
+              Mds.createSubscriptionUri(_serial!, "/Meas/HR"), "{}")
+          .listen((event) {
+        num hr = event["Body"]["average"];
+        _controller.add(hr.toInt());
+      });
+      state = DeviceState.sampling;
+    }
+  }
+}
+```

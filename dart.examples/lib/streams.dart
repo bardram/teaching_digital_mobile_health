@@ -2,15 +2,23 @@ import 'dart:async';
 import 'dart:math';
 
 void main(List<String> args) {
-  Stream<int> simpleHRMonitor =
-      Stream.periodic(Duration(seconds: 1), (count) => 52 + count)
-          .asBroadcastStream();
+  Stream<int> monitor = Stream.empty();
 
-  var subscription = simpleHRMonitor.listen((hr) => print('HR: $hr'));
+  var hrValues = [50, 53, 56, 58, 65, 54, 67, 55];
+  monitor = Stream.fromIterable(hrValues);
+  monitor.listen((hr) => print('HR: $hr'));
 
-  Future.delayed(Duration(seconds: 4), () => subscription.pause());
-  Future.delayed(Duration(seconds: 8), () => subscription.resume());
-  Future.delayed(Duration(seconds: 16), () => subscription.cancel());
+  monitor = Stream.fromFuture(Future.delayed(Duration(seconds: 5), () => 189));
+  monitor.listen((hr) => print('Future HR: $hr'));
+
+  monitor = Stream.periodic(Duration(seconds: 1), (count) => 52 + count);
+  monitor.listen((hr) => print('BPM: $hr'));
+
+  // var subscription = monitor.listen((hr) => print('HR: $hr'));
+
+  // Future.delayed(Duration(seconds: 4), () => subscription.pause());
+  // Future.delayed(Duration(seconds: 8), () => subscription.resume());
+  // Future.delayed(Duration(seconds: 16), () => subscription.cancel());
 
   // simpleHRMonitor.listen(
   //   (hr) {
@@ -63,16 +71,16 @@ void main(List<String> args) {
   //     .listen((sample) => samples[sample.$1] = sample.$2)
   //     .onData((data) => print(data));
 
-  var monitor = AdvancedHRMonitor();
+  // var monitor = AdvancedHRMonitor();
 
-  monitor.heartrate.listen(
-    (hr) => print(hr),
-    onDone: () => print("Monitor disposed..."),
-  );
-  monitor.start();
-  Future.delayed(Duration(seconds: 10), () => monitor.stop());
-  Future.delayed(Duration(seconds: 13), () => monitor.start());
-  Future.delayed(Duration(seconds: 16), () => monitor.dispose());
+  // monitor.heartrate.listen(
+  //   (hr) => print(hr),
+  //   onDone: () => print("Monitor disposed..."),
+  // );
+  // monitor.start();
+  // Future.delayed(Duration(seconds: 10), () => monitor.stop());
+  // Future.delayed(Duration(seconds: 13), () => monitor.start());
+  // Future.delayed(Duration(seconds: 16), () => monitor.dispose());
 }
 
 class HRMonitor {
