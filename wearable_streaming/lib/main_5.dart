@@ -236,7 +236,7 @@ class MovesenseHRMonitor extends StatefulHRMonitor {
   /// The serial number of the device.
   String? get name => _name;
 
-  MovesenseHRMonitor(this._address, this._name);
+  MovesenseHRMonitor(this._address, [this._name]);
 
   static List<MovesenseHRMonitor> devices = [];
 
