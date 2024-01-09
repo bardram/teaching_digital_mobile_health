@@ -1,5 +1,5 @@
-name: mvvm
-description: A Flutter project demonstration how to use the Model-View-ViewModel architecture.
+name: mvvm_provider
+description: A Flutter project demonstration how to use the Model-View-ViewModel architecture in combination with the Provider package.
 publish_to: 
 version: 1.0.0
 
@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
+  provider: any
 
 dev_dependencies:
   flutter_test:

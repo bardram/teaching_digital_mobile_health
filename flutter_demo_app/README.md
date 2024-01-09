@@ -1,6 +1,6 @@
-# flutter_demo_app
+# Flutter Demo App
 
-A new Flutter project.
+This is the standard Flutter Demo App generated when running `flutter create`.
 
 ## Getting Started
 
