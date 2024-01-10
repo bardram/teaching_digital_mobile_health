@@ -32,7 +32,8 @@ class HomeViewState extends State<HomeView> {
     setState(() {
       widget.model.add(Medication(
         'Hemangiol',
-        'Hemangiol® anvendes til behandling af hæmangiom ("jordbærmærke"), som er en samling af ekstra blodkar, der har dannet en knude i eller under huden.',
+        'Hemangiol® anvendes til behandling af hæmangiom ("jordbærmærke"), som '
+            'er en samling af ekstra blodkar, der har dannet en knude i eller under huden.',
       ));
     });
   }

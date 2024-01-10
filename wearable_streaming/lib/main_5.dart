@@ -8,10 +8,22 @@ import 'package:permission_handler/permission_handler.dart';
 
 void main() => runApp(const HRApp());
 
-/// This HR Monitor is a direct copy of main_3.dart but uses a Movesense device
-/// instead of the Polar device.
-/// Note that all the code is identical while just implementing the
-/// [MovesenseHRMonitor].
+/// This HR Monitor is an extension of main_3.dart with support for using a
+/// Movesense device in addition to the the Polar device.
+///
+/// This is done by;
+///
+/// * creating a super class [StatefulHRMonitor] which contain shared logic
+/// * creating a specialized sub-class for a [PolarHRMonitor] and a [MovesenseHRMonitor]
+///
+/// The app also shows how to make a device controller, where support for both
+/// Polar and Movesense is done in two separate classes - [MovesenseDeviceController]
+/// and [PolarDeviceController].
+///
+/// Finally, the app shows how a HR monitor can be extended with other functions.
+/// By extending the [MovesenseHRMonitor], the [MovesenseMonitor] class add more
+/// functionality -- in this case, adding stream than on a regular basis collects
+/// battery state and expose it in a stream.
 class HRApp extends StatelessWidget {
   const HRApp({super.key});
 
@@ -152,6 +164,7 @@ abstract class StatefulHRMonitor implements HRMonitor {
   Stream<int> get heartbeat => _controller.stream;
 
   @override
+  @mustCallSuper
   Future<void> init() async {
     if (!(await hasPermissions)) await requestPermissions();
   }
@@ -178,14 +191,14 @@ abstract class StatefulHRMonitor implements HRMonitor {
   void resume() => _subscription?.resume();
 
   @override
+  @mustCallSuper
   void stop() {
     _subscription?.cancel();
     state = DeviceState.connected;
   }
 }
 
-/// A stateful Polar Heart Rate (HR) Monitor where you can listen to
-/// [stateChange] events.
+/// A Polar Heart Rate (HR) Monitor.
 class PolarHRMonitor extends StatefulHRMonitor {
   final polar = Polar();
   final String _identifier;
@@ -222,7 +235,8 @@ class PolarHRMonitor extends StatefulHRMonitor {
 
 /// A Movesense Heart Rate (HR) Monitor.
 class MovesenseHRMonitor extends StatefulHRMonitor {
-  String? _address, _name, _serial;
+  final String? _address, _name;
+  String? _serial;
 
   @override
   String get identifier => _address!;
@@ -238,26 +252,10 @@ class MovesenseHRMonitor extends StatefulHRMonitor {
 
   MovesenseHRMonitor(this._address, [this._name]);
 
-  static List<MovesenseHRMonitor> devices = [];
-
-  static void startScan() {
-    try {
-      Mds.startScan((name, address) {
-        var device = MovesenseHRMonitor(address, name);
-        print('Device found, address: $address');
-        if (!devices.contains(device)) {
-          devices.add(device);
-        }
-      });
-    } on Error {
-      print('Error during scanning');
-    }
-  }
-
   @override
   Future<void> init() async {
     state = DeviceState.initialized;
-    if (!(await hasPermissions)) await requestPermissions();
+    await super.init();
 
     // Start connecting to the Movesense device with the specified address.
     state = DeviceState.connecting;
@@ -273,6 +271,7 @@ class MovesenseHRMonitor extends StatefulHRMonitor {
   }
 
   @override
+  @mustCallSuper
   void start() {
     if (state == DeviceState.connected && _serial != null) {
       _subscription = MdsAsync.subscribe(
@@ -288,4 +287,94 @@ class MovesenseHRMonitor extends StatefulHRMonitor {
 
   /// Disconnect from the Movesense device.
   void disconnect() => Mds.disconnect(address);
+}
+
+enum BatteryState { low, normal }
+
+/// A Movesense Monitor.
+class MovesenseMonitor extends MovesenseHRMonitor {
+  MovesenseMonitor(super.address, [super.name]);
+
+  final StreamController<BatteryState> _batteryStateController =
+      StreamController.broadcast();
+
+  /// A stream of battery status for this Movesense device.
+  Stream<BatteryState> get battery => _batteryStateController.stream;
+
+  @override
+  void start() {
+    super.start();
+
+    // Create a timer that asks for battery status on a regular basis.
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      MdsAsync.get(
+        Mds.createSubscriptionUri(_serial!, "/System/States/1"),
+        "{}",
+      ).then((value) {
+        print('>> $value');
+        num binaryState = value["Body"]["content"];
+        BatteryState state =
+            (binaryState.toInt() == 1) ? BatteryState.normal : BatteryState.low;
+        _batteryStateController.add(state);
+      });
+    });
+  }
+}
+
+/// Controls a list of [devices] found during a [scan] operation.
+abstract interface class DeviceController {
+  /// The list of available monitors.
+  List<HRMonitor> get devices;
+
+  /// Is this controller scanning for devices?
+  bool get isScanning;
+
+  /// Start scanning for devices. Found devices are added to [devices].
+  void scan();
+}
+
+/// A [DeviceController] handling [MovesenseHRMonitor] devices.
+class MovesenseDeviceController implements DeviceController {
+  final List<MovesenseHRMonitor> _devices = [];
+  bool _isScanning = false;
+
+  @override
+  List<HRMonitor> get devices => _devices;
+
+  @override
+  bool get isScanning => _isScanning;
+
+  @override
+  void scan() {
+    try {
+      _isScanning = true;
+      Timer(const Duration(seconds: 60), () => _isScanning = false);
+      Mds.startScan((name, address) {
+        var device = MovesenseHRMonitor(address, name);
+        print('Device found, address: $address');
+        if (!devices.contains(device)) {
+          devices.add(device);
+        }
+      });
+    } on Error {
+      print('Error during scanning');
+    }
+  }
+}
+
+class PolarDeviceController implements DeviceController {
+  final List<PolarHRMonitor> _devices = [];
+  bool _isScanning = false;
+
+  @override
+  List<HRMonitor> get devices => _devices;
+
+  @override
+  bool get isScanning => _isScanning;
+
+  @override
+  void scan() {
+    _isScanning = true;
+    // TODO: implement scan
+  }
 }

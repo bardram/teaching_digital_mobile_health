@@ -476,7 +476,12 @@ Now - since storage is listening to HR events (just like the UI is), data is sto
 
 ## [`main_5`](lib/main_5.dart)
 
-This HR Monitor is a direct copy of `main_3` while using a [Movesense](https://www.movesense.com/) device instead of the Polar device. Note that all the code is identical while just implementing the `MovesenseHRMonitor` class, which actually is only changed in the `init()` and `start()` methods. The rest is identical to the `StatefulPolarHRMonitor` defined in `main_3.dart`. The common code for both sensor are now added to the abstract `StatefulHRMonitor` class, which both inherits from.
+This HR Monitor is an extension of main_3.dart with support for using a [Movesense](https://www.movesense.com/) device in addition to the the Polar device.
+
+This is done by;
+
+* creating a super class `StatefulHRMonitor` which contain shared logic
+* creating a specialized sub-class for a `PolarHRMonitor` and a `MovesenseHRMonitor`
 
 ```dart
 /// A Movesense Heart Rate (HR) Monitor.
@@ -526,3 +531,76 @@ class MovesenseHRMonitor extends StatefulHRMonitor {
   }
 }
 ```
+
+The app also shows how a HR monitor can be extended with other functions. By extending the `MovesenseHRMonitor`, the `MovesenseMonitor` class add more
+functionality. In this case, adding stream than on a regular basis collects battery state and expose it in a stream.
+
+```dart
+enum BatteryState { low, normal }
+
+/// A Movesense Monitor.
+class MovesenseMonitor extends MovesenseHRMonitor {
+  MovesenseMonitor(super.address, [super.name]);
+
+  final StreamController<BatteryState> _batteryStateController =
+      StreamController.broadcast();
+
+  /// A stream of battery status for this Movesense device.
+  Stream<BatteryState> get battery => _batteryStateController.stream;
+
+  @override
+  void start() {
+    super.start();
+
+    // Create a timer that asks for battery status on a regular basis.
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      MdsAsync.get(
+        Mds.createSubscriptionUri(_serial!, "/System/States/1"),
+        "{}",
+      ).then((value) {
+        print('>> $value');
+        num binaryState = value["Body"]["content"];
+        BatteryState state =
+            (binaryState.toInt() == 1) ? BatteryState.normal : BatteryState.low;
+        _batteryStateController.add(state);
+      });
+    });
+  }
+}
+```
+
+Finally, the app shows how to make a device controller, where support for both Polar and Movesense is done in two separate classes - `MovesenseDeviceController`
+and `PolarDeviceController`.
+
+```dart
+/// A [DeviceController] handling [MovesenseHRMonitor] devices.
+class MovesenseDeviceController implements DeviceController {
+  final List<MovesenseHRMonitor> _devices = [];
+  bool _isScanning = false;
+
+  @override
+  List<HRMonitor> get devices => _devices;
+
+  @override
+  bool get isScanning => _isScanning;
+
+  @override
+  void scan() {
+    try {
+      _isScanning = true;
+      Timer(const Duration(seconds: 60), () => _isScanning = false);
+      Mds.startScan((name, address) {
+        var device = MovesenseHRMonitor(address, name);
+        print('Device found, address: $address');
+        if (!devices.contains(device)) {
+          devices.add(device);
+        }
+      });
+    } on Error {
+      print('Error during scanning');
+    }
+  }
+}
+```
+
+This device controller is not (yet) used in the user interface. But the intention is to use this controller to scan for devices and show a list that the user can select a device from.

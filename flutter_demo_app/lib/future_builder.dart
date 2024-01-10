@@ -18,12 +18,10 @@ class FutureBuilderExample extends StatefulWidget {
 }
 
 class _FutureBuilderExampleState extends State<FutureBuilderExample> {
-  final Future<String> loadData = Future<String>.delayed(
-    const Duration(seconds: 4),
-    () =>
-        // 'Data Loaded'
-        Future<String>.error('An Error Occurred....'),
-  );
+  final Future<String> loadData =
+      Future<String>.delayed(const Duration(seconds: 4), () => 'Data Loaded'
+          // Future<String>.error('An Error Occurred....'),
+          );
 
   @override
   Widget build(BuildContext context) => DefaultTextStyle(
