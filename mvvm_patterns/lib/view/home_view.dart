@@ -15,12 +15,14 @@ class HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) => MaterialApp(
         home: Scaffold(
           appBar: AppBar(title: Text(widget.model.title)),
-          body: Consumer<AppViewModel>(
-              builder: (context, viewModel, child) => ListView.builder(
-                  itemCount: widget.model.length,
-                  itemBuilder: (context, index) => MedicationView(
-                      model: MedicationViewModel(
-                          widget.model.list.medications[index])))),
+          body: ListenableBuilder(
+              listenable: widget.model,
+              builder: (BuildContext context, Widget? child) =>
+                  ListView.builder(
+                      itemCount: widget.model.length,
+                      itemBuilder: (context, index) => MedicationView(
+                          model: MedicationViewModel(
+                              widget.model.list.medications[index])))),
           floatingActionButton: FloatingActionButton(
             onPressed: addMedication,
             tooltip: 'Add Medication',
@@ -30,11 +32,12 @@ class HomeViewState extends State<HomeView> {
       );
 
   void addMedication() {
-    setState(() {
-      widget.model.add(Medication(
+    // setState(() {
+    widget.model.add(Medication()
+      ..prescribe(
         'Hemangiol',
         'Hemangiol® anvendes til behandling af hæmangiom ("jordbærmærke"), som er en samling af ekstra blodkar, der har dannet en knude i eller under huden.',
       ));
-    });
+    // });
   }
 }
