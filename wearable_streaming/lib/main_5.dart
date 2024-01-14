@@ -348,7 +348,7 @@ class MovesenseDeviceController implements DeviceController {
   void scan() {
     try {
       _isScanning = true;
-      Timer(const Duration(seconds: 60), () => _isScanning = false);
+      Timer(const Duration(seconds: 60), () => stopScan());
       Mds.startScan((name, address) {
         var device = MovesenseHRMonitor(address, name);
         print('Device found, address: $address');
@@ -359,6 +359,11 @@ class MovesenseDeviceController implements DeviceController {
     } on Error {
       print('Error during scanning');
     }
+  }
+
+  void stopScan() {
+    _isScanning = false;
+    Mds.stopScan();
   }
 }
 

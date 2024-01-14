@@ -1,9 +1,9 @@
 part of medication_app;
 
 class MedicationView extends StatefulWidget {
-  const MedicationView({required this.model, super.key});
-
   final MedicationViewModel model;
+
+  const MedicationView({required this.model, super.key});
 
   @override
   State<MedicationView> createState() => MedicationViewState();

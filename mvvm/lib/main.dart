@@ -17,15 +17,17 @@ class MedicationApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        home: HomeView(model: bLoc.model),
+        home: HomeView(model: AppViewModel(bLoc.title, bLoc.model)),
       );
 }
 
+/// A factory class used to get the models for the entire app.
 class MedicationBLoc {
-  /// A factory method used to get the model for the entire app.
-  AppViewModel get model => AppViewModel(
-      'Medication List',
-      MedicationList([
+  /// The title of the app.
+  String get title => 'Medication List';
+
+  /// The list of [Medication] to be shown in the app.
+  MedicationList get model => MedicationList([
         Medication(
           'Panodil',
           'Panodil er et svagt smertestillende middel, der anvendes ved svage '
@@ -37,5 +39,5 @@ class MedicationBLoc {
               'med andre (socialfobi), panikangst, generaliseret angst samt '
               'tvangsforestillinger og -handlinger (obsessiv-kompulsiv tilstand (OCD)).',
         ),
-      ]));
+      ]);
 }
