@@ -21,7 +21,7 @@ class MedicationApp extends StatelessWidget {
       );
 }
 
-/// A factory class used to get the models for the entire app.
+/// A factory BLoc used to get the models for the entire app.
 class MedicationBLoc {
   /// The title of the app.
   String get title => 'Medication List';
