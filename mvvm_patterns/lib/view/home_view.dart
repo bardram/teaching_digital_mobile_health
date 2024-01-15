@@ -24,7 +24,7 @@ class HomeViewState extends State<HomeView> {
                           model: MedicationViewModel(
                               widget.model.list.medications[index])))),
           floatingActionButton: FloatingActionButton(
-            onPressed: widget.model.plus(),
+            onPressed: widget.model.plus,
             tooltip: 'Add Medication',
             child: const Icon(Icons.add),
           ),

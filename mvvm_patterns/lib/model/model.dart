@@ -5,6 +5,12 @@ class MedicationList {
   MedicationList(this.medications);
 }
 
+/// Defines a medication.
+///
+/// This [Medication] is using a [MedicationStateMachine] to keep track
+/// of its [state]. This is done using the GoF State Pattern where each
+/// state is implemented as a separate class (e.g., [PrescribedMedicationState])
+/// which handles the logic in each state transition.
 class Medication {
   String? name, description;
   bool taken = false;
