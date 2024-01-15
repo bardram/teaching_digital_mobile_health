@@ -30,6 +30,8 @@ class MedicationApp extends StatelessWidget {
 class MedicationBLoc {
   static final MedicationBLoc _instance = MedicationBLoc._();
   MedicationBLoc._();
+
+  /// Create a singleton [MedicationBLoc].
   factory MedicationBLoc() => _instance;
 
   /// The title of the app.

@@ -15,8 +15,13 @@ class AppViewModel extends ChangeNotifier {
   /// The length of the [list] of medicine.
   int get length => list.medications.length;
 
-  /// Add [medication] to the [list] of medicine.
-  add(Medication medication) {
+  /// Called when the plus button is tapped.
+  plus() {
+    Medication medication = Medication()
+      ..prescribe(
+        'Hemangiol',
+        'Hemangiol® anvendes til behandling af hæmangiom ("jordbærmærke"), som er en samling af ekstra blodkar, der har dannet en knude i eller under huden.',
+      );
     list.medications.add(medication);
     notifyListeners();
   }

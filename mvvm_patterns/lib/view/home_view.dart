@@ -24,20 +24,10 @@ class HomeViewState extends State<HomeView> {
                           model: MedicationViewModel(
                               widget.model.list.medications[index])))),
           floatingActionButton: FloatingActionButton(
-            onPressed: addMedication,
+            onPressed: widget.model.plus(),
             tooltip: 'Add Medication',
             child: const Icon(Icons.add),
           ),
         ),
       );
-
-  void addMedication() {
-    // setState(() {
-    widget.model.add(Medication()
-      ..prescribe(
-        'Hemangiol',
-        'Hemangiol® anvendes til behandling af hæmangiom ("jordbærmærke"), som er en samling af ekstra blodkar, der har dannet en knude i eller under huden.',
-      ));
-    // });
-  }
 }

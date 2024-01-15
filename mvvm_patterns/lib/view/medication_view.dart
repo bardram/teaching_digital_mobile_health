@@ -18,7 +18,7 @@ class MedicationViewState extends State<MedicationView> {
           trailing: ListenableBuilder(
               listenable: widget.model,
               builder: (BuildContext context, Widget? child) =>
-                  widget.model.medication.taken
+                  widget.model.taken
                       ? const Icon(
                           Icons.check_box_outlined,
                           size: 24.0,
@@ -32,6 +32,5 @@ class MedicationViewState extends State<MedicationView> {
         ),
       );
 
-  void medicationTaken() =>
-      widget.model.taken(widget.model.medication.taken ? false : true);
+  void medicationTaken() => widget.model.tapped();
 }
