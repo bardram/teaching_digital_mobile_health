@@ -209,7 +209,7 @@ class StatefulPolarHRMonitor implements HRMonitor {
   }
 }
 
-/// Responsible for storing HR event to a Sembast database.
+/// Responsible for storing HR data to a Sembast database.
 class Storage {
   HRMonitor monitor;
   StoreRef? store;
@@ -258,4 +258,29 @@ class Storage {
   ///
   /// Returns -1 if unknown.
   Future<int> count() async => await store?.count(database) ?? -1;
+
+  /// Get the list of json objects which has not yet been uploaded.
+  // TODO - implement this getJsonToUpload() method.
+  Future<List<Map<String, int>>> getJsonToUpload() async => [{}];
+}
+
+/// A manager that collects data from [storage] which has not been uploaded
+/// yet and uploads this on regular basis.
+class UploadManager {
+  Storage storage;
+  Timer? uploadTimer;
+
+  /// Create an [UploadManager] which can upload data stored in [storage].
+  UploadManager(this.storage);
+
+  /// Start uploading every 10 minutes.
+  void startUpload() {
+    uploadTimer = Timer.periodic(const Duration(minutes: 10), (timer) async {
+      var dataToUpload = await storage.getJsonToUpload();
+      print('Uploading ${dataToUpload.length} json objects...');
+    });
+  }
+
+  /// Stop uploading.
+  void stopUpload() => uploadTimer?.cancel();
 }
