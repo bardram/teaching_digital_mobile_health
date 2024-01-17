@@ -474,6 +474,34 @@ Now - since storage is listening to HR events (just like the UI is), data is sto
   {timestamp: 1699880580494, hr: 57}
   ```
 
+  This example also illustrates how to export the sembast database to a text file with the data as json. This is done in the `dump()` method, which is called on a regular basis by the `DumpManager` process (using a timer).
+
+  ```dart
+  /// Dump the database to a text file with JSON data.
+  /// The name of the file is the same as the database with extension '.json'.
+  Future<void> dump() async {
+    print('Starting to dump database');
+    int count = await this.count();
+
+    // Export db
+    Map<String, Object?> data = await exportDatabase(_database);
+
+    // Convert the JSON map to a string representation.
+    String dataAsJson = json.encode(data);
+    // Build the file path and write the data
+    var path = join(dir!.path, '$DB_NAME.json');
+    await File(path).writeAsString(dataAsJson);
+    print("Database dumped in file '$path'. "
+        'Total $count records successfully written to file.');
+  }
+  ```
+
+  Files are save in the default document folder on the phone.
+  
+  On iOS, this is the `NSDocumentsDirectory` and the files can be accessed via the MacOS Finder.
+  
+  On Android, Flutter files are stored in the `AppData` directory, which is located in the `data/data/<package_name>/app_flutter` folder. Files can be accessed via AndroidStudio.
+
 ## [`main_5`](lib/main_5.dart)
 
 This HR Monitor is an extension of main_3.dart with support for using a [Movesense](https://www.movesense.com/) device in addition to the the Polar device.

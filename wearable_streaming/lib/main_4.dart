@@ -1,11 +1,16 @@
 // ignore_for_file: avoid_print
 
-import 'package:flutter/material.dart';
+import 'dart:io';
+
 import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:polar/polar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
+import 'package:sembast/utils/sembast_import_export.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
@@ -211,44 +216,55 @@ class StatefulPolarHRMonitor implements HRMonitor {
 
 /// Responsible for storing HR data to a Sembast database.
 class Storage {
-  HRMonitor monitor;
-  StoreRef? store;
-  var database;
+  static const String DB_NAME = 'hr_monitor';
+  HRMonitor _monitor;
+  var _database;
+  StoreRef? _store;
 
-  /// Initialize this storage by identifying which [monitor] is should save
+  /// The path to the phone's application folder.
+  Directory? dir;
+
+  /// Initialize this storage by identifying which [_monitor] is should save
   /// data for.
-  Storage(this.monitor);
+  Storage(this._monitor);
 
   /// Initialize the storage by opening the database and listening to HR events.
   Future<void> init() async {
-    print('Initializing storage, id: ${monitor.identifier}');
+    print('Initializing storage, id: ${_monitor.identifier}');
 
     // Get the application documents directory
-    var dir = await getApplicationDocumentsDirectory();
-    // Make sure it exists
-    await dir.create(recursive: true);
-    // Build the database path
-    var path = join(dir.path, 'hr_monitor.db');
-    // Open the database
-    database = await databaseFactoryIo.openDatabase(path);
+    dir = await getApplicationDocumentsDirectory();
+    if (dir == null) {
+      print('WARNING - could not create database. Data is not saved....');
+    } else {
+      // Make sure it exists
+      await dir?.create(recursive: true);
+      // Build the database path
+      var path = join(dir!.path, '$DB_NAME.db');
+      // Open the database
+      _database = await databaseFactoryIo.openDatabase(path);
 
-    // Create a store with the name of the identifier of the monitor and which
-    // can hold maps indexed by an int.
-    store = intMapStoreFactory.store(monitor.identifier);
+      // Create a store with the name of the identifier of the monitor and which
+      // can hold maps indexed by an int.
+      _store = intMapStoreFactory.store(_monitor.identifier);
 
-    // Create a JSON object with the timestamp and HR:
-    //   {timestamp: 1699880580494, hr: 57}
-    Map<String, int> json = {};
+      // Create a JSON object with the timestamp and HR:
+      //   {timestamp: 1699880580494, hr: 57}
+      Map<String, int> json = {};
 
-    // Listen to the monitor's HR event and add them to the store.
-    monitor.heartbeat.listen((int hr) {
-      // Timestamp the HR reading.
-      json['timestamp'] = DateTime.now().millisecondsSinceEpoch;
-      json['hr'] = hr;
+      // Listen to the monitor's HR event and add them to the store.
+      _monitor.heartbeat.listen((int hr) {
+        // Timestamp the HR reading.
+        json['timestamp'] = DateTime.now().millisecondsSinceEpoch;
+        json['hr'] = hr;
 
-      // Add the json record to the database
-      store?.add(database, json);
-    });
+        // Add the json record to the database
+        _store?.add(_database, json);
+      });
+
+      // Create a dumper to save the data on a regular basis
+      DumpManager(this).start();
+    }
   }
 
   /// The total number of HR samples collected in the database.
@@ -257,11 +273,48 @@ class Storage {
   ///    count().then((count) => print('>> size: $count'));
   ///
   /// Returns -1 if unknown.
-  Future<int> count() async => await store?.count(database) ?? -1;
+  Future<int> count() async => await _store?.count(_database) ?? -1;
 
   /// Get the list of json objects which has not yet been uploaded.
   // TODO - implement this getJsonToUpload() method.
   Future<List<Map<String, int>>> getJsonToUpload() async => [{}];
+
+  /// Dump the database to a text file with JSON data.
+  /// The name of the file is the same as the database with extension '.json'.
+  Future<void> dump() async {
+    print('Starting to dump database');
+    int count = await this.count();
+
+    // Export db, but only this store.
+    Map<String, Object?> data =
+        await exportDatabase(_database, storeNames: [_monitor.identifier]);
+
+    // Convert the JSON map to a string representation.
+    String dataAsJson = json.encode(data);
+    // Build the file path and write the data
+    var path = join(dir!.path, '$DB_NAME.json');
+    await File(path).writeAsString(dataAsJson);
+    print("Database dumped in file '$path'. "
+        'Total $count records successfully written to file.');
+  }
+}
+
+/// A manager that dumps the database to a JSON file on regular basis.
+class DumpManager {
+  Storage storage;
+  Timer? dumper;
+
+  /// Create an [DumpManager] which can upload data stored in the database.
+  DumpManager(this.storage);
+
+  /// Start dumping the db every 10 minutes.
+  void start() {
+    dumper = Timer.periodic(
+        const Duration(minutes: 1), (_) async => await storage.dump());
+  }
+
+  /// Stop dumping.
+  void stop() => dumper?.cancel();
 }
 
 /// A manager that collects data from [storage] which has not been uploaded
