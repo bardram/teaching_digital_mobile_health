@@ -8,3 +8,5 @@ Public repository for the DTU courses [22061 "Introduction to Digital Health"](h
 * [mvvm_patterns](/mvvm_patterns/) - the same example app as [mvvm](/mvvm/) designed according to the MVVM architecture, but also including the use of software design patterns (Singleton, Facade, Observer, State).
 * [mobile_sensing](/mobile_sensing/) - a Flutter app that illustrates how to collect data from onboard phone sensors by using different Flutter plugins. It collects data from the following sensors: accelerometer, gyroscope, magnetometer, location (GPS), pedometer (step count), and ambient light.
 * [wearable_streaming](/wearable_streaming/) - a set of 5 Flutter apps that illustrates how to implement **reactive** programming in Flutter and how to access and handle real **devices**. Shows how to integrate to the [Polar](https://www.polar.com/da) and [Movesense](https://www.movesense.com/) devices.
+* [python_visualization](/python_visualization/) - a set of Jupyter Python notebook showing how to plot heart rate (HR) and ECG data.
+
