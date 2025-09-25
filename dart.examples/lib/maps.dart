@@ -32,7 +32,8 @@ void main(List<String> args) {
 
   print(telephoneBook_3);
 
-  // This is not valid, since telephoneBook_3 is a Map<String, String> and
-  // telephoneBook is a Map<String, int>
+  // This is not valid, since telephoneBook_3 is a Map<String, String>
+  // whereas telephoneBook is a Map<String, int>
   // telephoneBook.addAll(telephoneBook_3);
+  // print(telephoneBook);
 }

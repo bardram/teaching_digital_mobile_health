@@ -42,7 +42,9 @@ void main() {
   });
 
   // this is not valid since 'numbers' do not contain Strings.
-  // months.addAll(numbers);
+  // months.addAll(realNumbers);
+
+  numbers.addAll(months);
 
   List<int> monthNumbers = [1, 2, 3, 4, 5];
 

@@ -2,15 +2,15 @@ class Employee {
   int id;
   String name;
   String department;
-  DateTime? hired;
+  DateTime? hired = null;
+
+  bool get isHired => hired != null;
 
   Employee(this.id, this.name, this.department);
 
   void hire() => hired = DateTime.now();
 
   void fire() => hired = null;
-
-  bool get isHired => hired != null;
 
   @override
   String toString() =>
@@ -19,6 +19,8 @@ class Employee {
 
 class Manager extends Employee {
   List<Employee> employees = [];
+
+  int get headCount => employees.length;
 
   Manager(super.id, super.name, super.department);
 
@@ -34,8 +36,6 @@ class Manager extends Employee {
     employees.remove(employee);
   }
 
-  int get headCount => employees.length;
-
   @override
   String toString() => '${super.toString()}, employees: $employees';
 }
@@ -45,17 +45,22 @@ class Executive extends Manager {
 }
 
 void main(List<String> args) {
-  var e1 = new Employee(1, 'Alex', 'Accounting');
+  // Example of using plain classes and inheritance
+
+  var e1 = Employee(1, 'Alex', 'Accounting');
   var e2 = new Employee(2, 'Benjamin', 'Engineering');
   var e3 = new Employee(3, 'Christian', 'HR');
   var e4 = Employee(4, 'Dorthe', 'Engineering');
+
+  print(e1.toString());
 
   var manager = new Manager(99, 'Ole Hanson', 'Engineering');
   manager.hire();
   manager.hireEmployee(e1);
   manager.hireEmployee(e3);
 
-  print(manager);
+  print('Manager: $manager\n');
+  print(manager.headCount);
 
   var ceo = Executive(999, 'Hans Gunnarson', 'Executive Management Group');
   ceo.hireEmployee(manager);
@@ -67,16 +72,18 @@ void main(List<String> args) {
 
   company[0].hire();
 
-  print(ceo);
+  print('CEO: $ceo\n');
 
-  // Map<String, Sensor> sensors = {};
-  // sensors['B36B5B21'] = PolarSensor('H10', 'READY');
-  // sensors['B36B5421'] = PolarSensor('H10', 'READY');
-  // sensors['B36B5721'] = PolarSensor('PVS', 'READY');
+  // Example of using interface classes
 
-  // sensors.forEach((key, sensor) => sensor.start());
+  Map<String, Sensor> sensors = {};
+  sensors['B36B5B21'] = PolarSensor('H10', 'READY');
+  sensors['B36B5421'] = PolarSensor('H10', 'READY');
+  sensors['B36B5721'] = PolarSensor('PVS', 'READY');
 
-  // print(sensors);
+  sensors.forEach((key, sensor) => sensor.start());
+
+  print(sensors);
 }
 
 /// A definition of a sensor.

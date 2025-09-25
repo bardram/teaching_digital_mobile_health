@@ -1,5 +1,5 @@
 void main(List<String> args) {
-  Set<int> set = {};
+  Set set = {};
   set.add(0);
   set.add(1);
   set.add(0);
@@ -19,4 +19,8 @@ void main(List<String> args) {
 
   List<int> list_2 = set_2.toList();
   print(list_2);
+
+  Set<String> names = {'Jess', 'Jake', 'May', 'Amy'};
+  set.addAll(names);
+  print(set);
 }
