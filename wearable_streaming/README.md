@@ -498,9 +498,14 @@ Now - since storage is listening to HR events (just like the UI is), data is sto
 
   Files are save in the default document folder on the phone.
   
-  On iOS, this is the `NSDocumentsDirectory` and the files can be accessed via the MacOS Finder.
-  
-  On Android, Flutter files are stored in the `AppData` directory, which is located in the `data/data/<package_name>/app_flutter` folder. Files can be accessed via AndroidStudio.
+  On **iOS**, this is the `NSDocumentsDirectory` and the files can be accessed via the MacOS Finder. You need to add the following to tne `info.plist` to get access to the app's files:
+
+```
+<key>UIFileSharingEnabled</key>
+<true/>
+```
+
+  On **Android**, Flutter files are stored in the `AppData` directory, which is located in the `data/data/<package_name>/app_flutter` folder. Files can be accessed via AndroidStudio.
 
 ## [`main_5`](lib/main_5.dart)
 

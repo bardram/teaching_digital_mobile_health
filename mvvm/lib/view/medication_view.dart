@@ -1,4 +1,4 @@
-part of medication_app;
+part of '../main.dart';
 
 class MedicationView extends StatefulWidget {
   final MedicationViewModel model;

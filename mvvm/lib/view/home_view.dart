@@ -1,4 +1,4 @@
-part of medication_app;
+part of '../main.dart';
 
 /// The home view of the medication app, creating the [MaterialApp] widget.
 class HomeView extends StatefulWidget {

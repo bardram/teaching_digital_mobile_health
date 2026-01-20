@@ -1,4 +1,4 @@
-part of medication_app;
+part of '../main.dart';
 
 /// View model for the entire app holding the [title] of the app and the [list]
 /// of medication to show.

@@ -1,4 +1,4 @@
-library medication_app;
+library;
 
 import 'package:flutter/material.dart';
 
@@ -8,18 +8,19 @@ part 'view_model/medication_view_model.dart';
 part 'view/home_view.dart';
 part 'view/medication_view.dart';
 
-void main() => runApp(MedicationApp());
+void main() => runApp(const MedicationApp());
 
 class MedicationApp extends StatelessWidget {
-  MedicationApp({super.key});
-
-  final MedicationBLoc bLoc = MedicationBLoc();
+  const MedicationApp({super.key});
 
   @override
   Widget build(BuildContext context) => MaterialApp(
         home: HomeView(model: AppViewModel(bLoc.title, bLoc.model)),
       );
 }
+
+/// The global BLoc instance to get the models from.
+final MedicationBLoc bLoc = MedicationBLoc();
 
 /// A factory BLoc used to get the models for the entire app.
 class MedicationBLoc {

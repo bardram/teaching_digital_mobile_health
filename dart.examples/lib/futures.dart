@@ -1,13 +1,17 @@
 import 'package:http/http.dart' as http;
 
-// void main(List<String> args) {
-//   var future = http.get(Uri.parse('http://example.com'));
+void main(List<String> args) async {
+  var response = await http.get(Uri.parse('http://example.com'));
 
-//   // get the content of the URL and print it
-//   future.then((response) => print(response.body));
+  print(response.body);
 
-//   print('Hej Jakob');
-// }
+  // get the content of the URL and print it
+  // future.then((response) => print(response.body));
+  // future.onError((error, stackTrace) => print(error));
+
+  print('Hej Jakob');
+  // print(future);
+}
 
 // void main(List<String> args) {
 //   Future<http.Response> html = http.get(Uri.parse('http://example.com'));
@@ -36,21 +40,22 @@ import 'package:http/http.dart' as http;
 //   print(response.body);
 // }
 
-void main(List<String> args) async {
-  // now let's try with a non-existing URL
-  var future = http.get(Uri.parse('http://no_future.com'));
-
-  future
-      .then((response) => print(response.headers))
-      .catchError((error) => print('An Error occurred in the future:  $error'))
-      .whenComplete(() => print('But at least the future has arrived....'));
-}
-
-// void main(List<String> args) {
-//   var future = getHtmlPage('http://example.com');
+// void main(List<String> args) async {
+//   // now let's try with a non-existing URL
+//   var future = http.get(Uri.parse('http://no_future.com'));
 
 //   future
-//       .then((page) => print(page))
+//       .then((response) => print(response.headers))
+//       .catchError((error) => print('An Error occurred in the future:  $error'))
+//       .whenComplete(() => print('But at least the future has arrived....'));
+// }
+
+// void main(List<String> args) {
+//   // var future = getHtmlPage('http://example.com');
+//   var future = http.get(Uri.parse('http://example.com'));
+
+//   future
+//       .then((response) => print(response.body))
 //       .catchError((error) => print('An Error occurred in the future:  $error'))
 //       .whenComplete(() => print('But at least the future has arrived....'));
 // }
